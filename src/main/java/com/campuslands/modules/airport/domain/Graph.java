@@ -12,17 +12,32 @@ public class Graph {
     private Map<Integer, Airport> airports = new HashMap<>();
     private Map<Integer, List<Edge>> adjacencyList = new HashMap<>();
 
-    public void addAirport(Airport airport) {
+    public void addAirport(Map <Integer, List<Edge>> airport) {
+        if(airports.containsKey(airport.getId())) {return;}
         airports.put(airport.getId(), airport);
-        adjacencyList.putIfAbsent(airport.getId(), new ArrayList<>());
     }
 
-    public void addEdge(int fromId, int toId) {
-        Airport from = airports.get(fromId);
-        Airport to = airports.get(toId);
+    public HashMap<Integer, List<Edge>> addEdge(Airport from, Airport to) {
         double distance = calculateDistance(from, to);
-        adjacencyList.get(fromId).add(new Edge(toId, distance));
-        adjacencyList.get(toId).add(new Edge(fromId, distance)); // Assuming undirected graph
+        HashMap<Integer, List<Edge>> adjacencyMap = new HashMap<>();
+        adjacencyMap.putIfAbsent(from.getId(), new ArrayList<>());
+        adjacencyMap.get(from.getId()).add(new Edge(to.getId(), distance));
+        adjacencyMap.get(to.getId()).add(new Edge(from.getId(), distance));
+        return adjacencyMap;
+    }
+
+    public void addEdgeToAirports(List<Airport> airports) {
+        HashMap<Integer, List<Edge>> adjacencyMap = new HashMap<>();
+
+        for (int i = 0; i < airports.size() - 2; i++) {
+            if (i + 2 == airports.size()) {
+                adjacencyMap.putAll(addEdge(airports.get(i), airports.get(0)));
+            }
+            adjacencyMap.putAll(addEdge(airports.get(i), airports.get(i + 1)));
+        }
+        //comrobar si ya eciste ese id del aeropuerto en la lista de adjencylist y sumar la existente a la nueva 
+
+        adjacencyList.putAll(adjacencyMap);
     }
 
     public List<Airport> findShortestPath(int startId, int endId) {
