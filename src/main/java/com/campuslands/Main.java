@@ -167,7 +167,7 @@ public class Main {
                     break;
                 case 2:
                     System.out.println("airport");
-                    AirportService airportService = new AirportService(airportMySQLRepository);
+                    AirportService airportService = new AirportService(airportMySQLRepository,tripRepository, flightconnectionMySQLRepository);
                     AirportConsoleAdapter airportConsoleAdapter = new AirportConsoleAdapter(airportService);
                     airportConsoleAdapter.start();
                     break;

@@ -32,4 +32,7 @@ public class TripService {
         return tripRepository.findAll();
     }
 
+    public int saveAndReturnId(Trip trip){
+        return  tripRepository.saveAndReturnId(trip);
+    }
 }

@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -38,6 +39,32 @@ public class TripMySQLRepository implements TripRepository {
             e.printStackTrace();
         }
     }
+
+    //Metodo que devuelve el id del trip creaedo
+    @Override
+    public int saveAndReturnId(Trip trip) {
+        int generatedId = -1; // Default value if ID is not generated
+        try (Connection connection = DriverManager.getConnection(url, user, password)) {
+            String query = "INSERT INTO trip (tripDate, priceTrip, idAirportOrigen, idAirportDest) VALUES (?,?,?,?)";
+            try (PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+                statement.setDate(1, trip.getTripDate());
+                statement.setDouble(2, trip.getPriceTrip());
+                statement.setInt(3, trip.getIdAirportOrigen());
+                statement.setInt(4, trip.getIdAirportDestint());
+                statement.executeUpdate();
+
+                // Retrieve the generated keys
+                try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        generatedId = generatedKeys.getInt(1);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return generatedId;
+}
 
     @Override
     public void update(Trip trip) {

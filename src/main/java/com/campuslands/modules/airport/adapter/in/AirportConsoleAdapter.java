@@ -4,8 +4,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 
+import javax.print.DocFlavor.STRING;
+
+import java.sql.Date;
+
 import com.campuslands.modules.airport.application.AirportService;
 import com.campuslands.modules.airport.domain.Airport;
+import com.campuslands.modules.flightconnection.domain.Flightconnection;
+import com.campuslands.modules.trip.domain.Trip;
 
 public class AirportConsoleAdapter {
     
@@ -118,7 +124,7 @@ public class AirportConsoleAdapter {
                     scanner.nextLine(); // Consume el salto de línea pendiente
                 
                     List<Airport> path = airportService.findShortestPath(startId, endId);
-                
+                    
                     if (path.isEmpty()) {
                         System.out.println("No se encontró una ruta.");
                     } else {
@@ -145,6 +151,32 @@ public class AirportConsoleAdapter {
                             System.out.println();
                         }
                     }
+
+                    System.out.println("Desea Crear esta Coneccion de vuelo ? Y/N ");
+                    String input = scanner.nextLine();
+                    if(input.equals("Y") ){
+
+                        System.out.println("Ingrese la fecha del viaje(YYYY-MM-DD)");
+                        Date dateTrip = Date.valueOf(scanner.nextLine());
+
+                        System.out.println("Ingrese el costo del viaje");
+                        Double priceTrip = Double.parseDouble(scanner.nextLine());
+                        Trip trip = new Trip(dateTrip, priceTrip, startId, endId);
+                        int idTrip = airportService.saveTrip(trip);
+                        
+                        //Agrergar las escalas
+                        if (!path.isEmpty()) {
+                            System.out.println("Ingrese el numero de coneccion: ");
+                            String conNumber = scanner.nextLine();
+
+                            path.forEach((airport) ->{
+                                Flightconnection fc = new Flightconnection(conNumber, idTrip, airport.getId());
+                                airportService.saveFlightConnection(fc);
+                            });
+                            System.out.println(String.format("Vuelo id: %d\nConecciones con Numero de Coneccion:%s\n CREADOS", idTrip, conNumber));
+                        }
+                    }
+                    
                     break;
 
                 case 0:

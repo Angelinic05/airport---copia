@@ -4,7 +4,7 @@ public class Flightconnection {
     int id;
     String connectionNumber;
     int idTrip;
-    int idPlane;
+    Integer idPlane;
     int idAirport;
 
     public Flightconnection(){}
@@ -21,6 +21,12 @@ public class Flightconnection {
         this.connectionNumber = connectionNumber;
         this.idTrip = idTrip;
         this.idPlane = idPlane;
+        this.idAirport = idAirport;
+    }
+
+    public Flightconnection(String connectionNumber, int idTrip, int idAirport) {
+        this.connectionNumber = connectionNumber;
+        this.idTrip = idTrip;
         this.idAirport = idAirport;
     }
 
@@ -44,7 +50,7 @@ public class Flightconnection {
     public void setIdTrip(int idTrip) {
         this.idTrip = idTrip;
     }
-    public int getIdPlane() {
+    public Integer getIdPlane() {
         return idPlane;
     }
     public void setIdPlane(int idPlane) {

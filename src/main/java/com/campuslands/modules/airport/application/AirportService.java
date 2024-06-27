@@ -2,6 +2,10 @@ package com.campuslands.modules.airport.application;
 
 import com.campuslands.modules.airport.infrastructure.AirportRepository;
 import com.campuslands.modules.flightconnection.application.FlightconnectionService;
+import com.campuslands.modules.flightconnection.domain.Flightconnection;
+import com.campuslands.modules.flightconnection.infrastructure.FlightconnectionRepository;
+import com.campuslands.modules.trip.domain.Trip;
+import com.campuslands.modules.trip.infraestructure.TripRepository;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,10 +19,14 @@ import com.campuslands.modules.airport.domain.Graph;
 
 public class AirportService {
     private AirportRepository airportRepository;
+    private TripRepository tripRepository;
+    private FlightconnectionRepository flightconnectionRepository;
     private Graph graph;
 
-    public AirportService(AirportRepository airportRepository) {
+    public AirportService(AirportRepository airportRepository, TripRepository tripRepository, FlightconnectionRepository flightconnectionRepository) {
         this.airportRepository = airportRepository;
+        this.tripRepository = tripRepository;
+        this.flightconnectionRepository = flightconnectionRepository;
         this.graph = new Graph();
         initializeGraph();
     }
@@ -71,5 +79,13 @@ public class AirportService {
 
     public HashMap<Integer, List<Integer>> getAirportsByAirline() {
         return airportRepository.getAirportsByAirline();
+    }
+
+    public int saveTrip(Trip trip){
+        return tripRepository.saveAndReturnId(trip);
+    }
+
+    public void saveFlightConnection(Flightconnection flightconnection){
+        flightconnectionRepository.save(flightconnection);
     }
 }
