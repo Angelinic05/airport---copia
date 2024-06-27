@@ -6,6 +6,7 @@ import com.campuslands.modules.flightconnection.application.FlightconnectionServ
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import com.campuslands.modules.airport.domain.Airport;
@@ -23,16 +24,20 @@ public class AirportService {
     }
 
     private void initializeGraph() {
-        List<Airport> airports = airportRepository.findAll();
-        for (Airport airport : airports) {
-            graph.addAirport(airport);
-            System.out.println("Añadido aeropuerto al grafo: " + airport);
+        HashMap<Integer, List<Integer>> airports = airportRepository.getAirportsByAirline();
+        for (Map.Entry<Integer,List<Integer>> airlineAirport : airports.entrySet()) {
+            List<Airport> airportsInAirline = new ArrayList<>();
+            for (Integer idAirport : airlineAirport.getValue()) {
+                Optional<Airport> airport = airportRepository.findById(idAirport);
+                airportsInAirline.add(airport.get());
+                System.out.println("Añadido aeropuerto al grafo: " + airport.get());
+            }
+            graph.addEdgeToAirports(airportsInAirline);
         }
     }
 
     public void saveAirport(Airport airport) {
         airportRepository.save(airport);
-        graph.addAirport(airport);
     }
 
     public void updateAirport(Airport airport) {

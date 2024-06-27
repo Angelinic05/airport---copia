@@ -72,8 +72,8 @@ public class AirportAirlineMySQLRepository implements AirportAirlineRepository {
                 while (resultSet.next()) {
                     airportAirlines.add(new AirportAirline(
                             resultSet.getInt("id"),
-                            resultSet.getInt("idAirport"),
-                            resultSet.getInt("idAirline")
+                            resultSet.getInt("idAirline"),
+                            resultSet.getInt("idAirport")
                     ));
                 }    
             }

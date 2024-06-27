@@ -109,6 +109,7 @@ public class AirportConsoleAdapter {
 
                 case 6:
                     System.out.println(airportService.getAirportsByAirline().toString());
+                    
                     System.out.print("Ingrese el Id del aeropuerto de origen: ");
                     int startId = scanner.nextInt();
                     scanner.nextLine(); // Consume el salto de línea pendiente

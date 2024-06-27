@@ -12,33 +12,67 @@ public class Graph {
     private Map<Integer, Airport> airports = new HashMap<>();
     private Map<Integer, List<Edge>> adjacencyList = new HashMap<>();
 
-    public void addAirport(Map <Integer, List<Edge>> airport) {
-        if(airports.containsKey(airport.getId())) {return;}
-        airports.put(airport.getId(), airport);
-    }
 
     public HashMap<Integer, List<Edge>> addEdge(Airport from, Airport to) {
         double distance = calculateDistance(from, to);
         HashMap<Integer, List<Edge>> adjacencyMap = new HashMap<>();
+
         adjacencyMap.putIfAbsent(from.getId(), new ArrayList<>());
+        adjacencyMap.putIfAbsent(to.getId(), new ArrayList<>());
+
         adjacencyMap.get(from.getId()).add(new Edge(to.getId(), distance));
         adjacencyMap.get(to.getId()).add(new Edge(from.getId(), distance));
+
         return adjacencyMap;
     }
 
-    public void addEdgeToAirports(List<Airport> airports) {
-        HashMap<Integer, List<Edge>> adjacencyMap = new HashMap<>();
-
-        for (int i = 0; i < airports.size() - 2; i++) {
-            if (i + 2 == airports.size()) {
-                adjacencyMap.putAll(addEdge(airports.get(i), airports.get(0)));
-            }
-            adjacencyMap.putAll(addEdge(airports.get(i), airports.get(i + 1)));
-        }
-        //comrobar si ya eciste ese id del aeropuerto en la lista de adjencylist y sumar la existente a la nueva 
-
-        adjacencyList.putAll(adjacencyMap);
+    public void printAdjacencyList() {
+        adjacencyList.forEach((airport, edges) -> {
+            System.out.print(String.format("Airport id: %d\n Edges: ", airport));
+            edges.forEach(edge -> {
+                System.out.print(String.format("(TO: %d, WEIGHT: %.2f\n) ", edge.toId, edge.weight));
+            });
+            System.out.println(); // Nueva línea después de imprimir todas las aristas del aeropuerto
+        });
     }
+
+    public void addEdgeToAirports(List<Airport> newAirports) {
+        HashMap<Integer, List<Edge>> adjacencyMapTemp = new HashMap<>();
+
+        for (int i = 0; i < newAirports.size() - 1; i++) {
+
+            Airport from = newAirports.get(i);
+            Airport to = newAirports.get((i + 1) % newAirports.size());
+
+            HashMap<Integer, List<Edge>> edges = addEdge(from, to);
+            for (Map.Entry<Integer, List<Edge>> entry : edges.entrySet()) {
+                int id = entry.getKey();
+                List<Edge> edgeList = entry.getValue();
+                
+                // Check if the id already exists in adjacencyMapTemp
+                if (adjacencyMapTemp.containsKey(id)) {
+                    adjacencyMapTemp.get(id).addAll(edgeList);
+                } else {
+                    adjacencyMapTemp.put(id, new ArrayList<>(edgeList));
+                }
+            }
+
+            airports.put(from.getId(), from);
+            airports.put(to.getId(), to);
+        }
+
+        for (Map.Entry<Integer, List<Edge>> entry : adjacencyMapTemp.entrySet()) {
+            int id = entry.getKey();
+            List<Edge> edgeList = entry.getValue();
+            
+            if (adjacencyList.containsKey(id)) {
+                adjacencyList.get(id).addAll(edgeList);
+            } else {
+                adjacencyList.put(id, new ArrayList<>(edgeList));
+            }
+        }
+        }
+
 
     public List<Airport> findShortestPath(int startId, int endId) {
         PriorityQueue<Edge> queue = new PriorityQueue<>(Comparator.comparingDouble(edge -> edge.weight));
@@ -55,8 +89,8 @@ public class Graph {
             int current = queue.poll().toId;
             if (current == endId) break;
 
-            // System.out.println("Explorando aeropuerto: " + airports.get(current).getName());
-            System.out.println(adjacencyList);
+            System.out.println("Explorando aeropuerto: " + airports.get(current).getName());
+            printAdjacencyList();
             for (Edge edge : adjacencyList.get(current) ) {
                 double newDist = distances.get(current) + edge.weight;
                 if (newDist < distances.get(edge.toId)) {
